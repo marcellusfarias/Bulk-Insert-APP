@@ -1,16 +1,15 @@
-﻿using BulkInsertAPP.Tables;
+﻿using BulkInsertAPP.RegisteredTables;
+using BulkInsertAPP.Tables;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.OleDb;
-using System.Windows.Forms;
-
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using BulkInsertAPP.RegisteredTables;
+using System.Windows.Forms;
 using System.Transactions;
-using System.Configuration;
 
 namespace BulkInsertAPP
 {
@@ -46,6 +45,7 @@ namespace BulkInsertAPP
             txtUserID.Text = builder.UserID;
             txtPassword.Text = builder.Password;
         }
+
         private void btnFindFile_Click(object sender, EventArgs e)
         {
             try
@@ -67,8 +67,8 @@ namespace BulkInsertAPP
                 MessageBox.Show(ex.Message);
             }
         }
-        private void btnImportFile_Click(object sender, EventArgs e)
 
+        private void btnImportFile_Click(object sender, EventArgs e)
         {
             try
             {
@@ -89,10 +89,12 @@ namespace BulkInsertAPP
                 MessageBox.Show(ex.Message);
             }
         }
+        
         private void btnClose_Click(object sender, EventArgs e)
         {
             this.Close();
         }
+        
         private void rdRegisteredTables_CheckedChanged(object sender, EventArgs e)
         {
             if (rdRegisteredTables.Checked)
@@ -138,15 +140,17 @@ namespace BulkInsertAPP
         #endregion
 
         #region Methods
+        
         private string GetSelectedTableName()
         {
             if (cmbRegisteredTables.Enabled)
-                return cmbRegisteredTables.SelectedText;
+                return ((ComboBoxEntity)cmbRegisteredTables.SelectedItem).Text;
             else if (!string.IsNullOrEmpty(txtTableName.Text))
                 return txtTableName.Text;
             else
                 return string.Empty;
         }
+        
         private void FindFile(string fileName)
         {
             string extension = Path.GetExtension(fileName);
@@ -186,7 +190,7 @@ namespace BulkInsertAPP
                         IRegisteredTable selectedTable = (IRegisteredTable)Activator.CreateInstance((Type)cmbRegisteredTables.SelectedValue);
                         dataTable = (selectedTable.ConfigTable(dataTable));
                     }
-                    
+
                     gridImportar.AutoGenerateColumns = true;
                     gridImportar.DataSource = dataTable;
 
@@ -194,6 +198,7 @@ namespace BulkInsertAPP
                 }
             }
         }
+
         private void Save(string serverAddress, string dataBase, string userID, string password, string tableName)
         {
             using (TransactionScope ts = new TransactionScope())
